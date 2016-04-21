@@ -7,6 +7,7 @@ app.use('/app', express.static(path.resolve(__dirname, 'app')));
 app.use('/libs', express.static(path.resolve(__dirname, 'libs')));
 
 var renderIndex = (req: express.Request, res: express.Response) => {
+    console.log("-> request to %s", req.url);
     res.sendFile(path.resolve(__dirname, 'index.html'));
 }
 

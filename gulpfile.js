@@ -36,7 +36,7 @@ var jsNPMDependencies = [
     'angular2/bundles/router.dev.js'
 ] 
 
-gulp.task('build:index', function(){
+gulp.task('build:assets', function(){
     var mappedPaths = jsNPMDependencies.map(file => {return path.resolve('node_modules', file)}) 
     
     //Let's copy our head dependencies into a dist/libs
@@ -44,7 +44,7 @@ gulp.task('build:index', function(){
         .pipe(gulp.dest('dist/libs'))
      
     //Let's copy our index into dist   
-    var copyIndex = gulp.src('client/index.html')
+    var copyIndex = gulp.src('client/**/*.{html,css}')
         .pipe(gulp.dest('dist'))
     return [copyJsNPMDependencies, copyIndex];
 });
@@ -61,7 +61,7 @@ gulp.task('build:app', function(){
 
 
 gulp.task('build', function(callback){
-    runSequence('clean', 'build:server', 'build:index', 'build:app', callback);
+    runSequence('clean', 'build:server', 'build:assets', 'build:app', callback);
 });
 
 gulp.task('default', ['build']);

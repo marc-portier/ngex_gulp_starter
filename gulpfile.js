@@ -11,21 +11,21 @@ var gulp = require('gulp'),
 // const    
     TGT_DIR = 'dist',
     TGT_DIR_LIBS = path.join(TGT_DIR,'libs'),
+    SERVER_TGT_JS = 'server.js',
+    
     SRC_DIR = 'src',
+    SERVER_TSCONF = path.join(SRC_DIR, 'server', 'tsconfig.json'),
+    SERVER_SRC_TS = path.join(SRC_DIR, 'server', '**', '*.ts'),
+    CLIENT_SRC_ASSETS = path.join(SRC_DIR, 'client', '**', '*.{html,css}'), 
+    CLIENT_TSCONFIG = path.join(SRC_DIR, 'client', 'tsconfig.json'),
+    CLIENT_SRC_TS = path.join(SRC_DIR, 'client', '**', '*.ts'),
     CLIENT_JSNPM_DEPS = [
         'angular2/bundles/angular2-polyfills.js',
         'systemjs/dist/system.src.js',
         'rxjs/bundles/Rx.js',
         'angular2/bundles/angular2.dev.js',
         'angular2/bundles/router.dev.js'
-    ],
-    
-    SERVER_TSCONF = 'server/tsconfig.json',
-    SERVER_SRC_TS = 'server/**/*.ts',
-    SERVER_TGT_JSCAT = 'server.js',
-    CLIENT_SRC_ASSETS = 'client/**/*.{html,css}', 
-    CLIENT_TSCONFIG = 'client/tsconfig.json',
-    CLIENT_SRC_TS = 'client/**/*.ts';    
+    ];
 
 // CLIENT
 gulp.task('client:assets', function(){
@@ -63,7 +63,7 @@ gulp.task('server', function () {
 		.pipe(sourcemaps.init())
         .pipe(ts(tsProject));
 	return tsResult.js
-        //.pipe(concat(SERVER_TGT_JSCAT))
+        //.pipe(concat(SERVER_TGT_JS))
         .pipe(sourcemaps.write()) 
 		.pipe(gulp.dest(TGT_DIR));
 });
@@ -86,9 +86,9 @@ gulp.task('default', ['build']);
 // RUN and WATCH
 gulp.task('demon', function () {
     return nodemon({
-        script: path.join(TGT_DIR, SERVER_TGT_JSCAT),
+        script: path.join(TGT_DIR, SERVER_TGT_JS),
         watch: 'dist',
-        delay: 250, // 200 millis to avoid to much restarts while rebuilding is going on
+        delay: 200, // 200 millis to avoid to much restarts while rebuilding is going on
         ext: 'js',
         env: {
             'NODE_ENV': 'development'

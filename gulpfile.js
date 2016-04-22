@@ -114,20 +114,20 @@ gulp.task('demon', function () {
 
 gulp.task('watch:client-app', function () {
     // watch app    --> build app    + restart
-    gulp.watch(CLIENT_SRC_TS, ['client:app']);
+    return gulp.watch(CLIENT_SRC_TS, ['client:app']);
 });
 gulp.task('watch:client-assets', function () {
     // watch assets --> build assets + restart
-    gulp.watch(CLIENT_SRC_ASSETS, ['client:assets']);
+    return gulp.watch(CLIENT_SRC_ASSETS, ['client:assets']);
 });
 gulp.task('watch:server', function () {
     // watch server --> build server + restart
-    gulp.watch(SERVER_SRC_TS, ['server']);
+    return gulp.watch(SERVER_SRC_TS, ['server']);
 });
 gulp.task('watch', ['watch:server', 'watch:client-assets', 'watch:client-app']);
 
 gulp.task('serv', function (callback) {
-    runSequence(['all', 'watch', 'demon'], callback);
+    return runSequence(['all', 'watch', 'demon'], callback);
 });
 
 

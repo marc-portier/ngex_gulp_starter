@@ -1,67 +1,137 @@
-var gulp = require('gulp');
-var path = require('path');
-var sourcemaps = require('gulp-sourcemaps');
-var ts = require('gulp-typescript');
-var del = require('del');
-var concat = require('gulp-concat')
-var runSequence = require('run-sequence');
+var gulp = require('gulp'),
+    path = require('path'),
+    sourcemaps = require('gulp-sourcemaps'),
+    ts = require('gulp-typescript'),
+    del = require('del'),
+    concat = require('gulp-concat'),
+    nodemon = require('gulp-nodemon');
+    runSequence = require('run-sequence'),  
+    gutil = require('gulp-util'),  
 
-// SERVER
-gulp.task('clean', function(){
-    return del('dist')
-});
-
-gulp.task('build:server', function () {
-	var tsProject = ts.createProject('server/tsconfig.json');
-    var tsResult = gulp.src('server/**/*.ts')
-		.pipe(sourcemaps.init())
-        .pipe(ts(tsProject))
-	return tsResult.js
-        .pipe(concat('server.js'))
-        .pipe(sourcemaps.write()) 
-		.pipe(gulp.dest('dist'))
-});
-
+// const    
+    TGT_DIR = 'dist',
+    TGT_DIR_LIBS = path.join(TGT_DIR,'libs'),
+    SRC_DIR = 'src',
+    CLIENT_JSNPM_DEPS = [
+        'angular2/bundles/angular2-polyfills.js',
+        'systemjs/dist/system.src.js',
+        'rxjs/bundles/Rx.js',
+        'angular2/bundles/angular2.dev.js',
+        'angular2/bundles/router.dev.js'
+    ],
+    
+    SERVER_TSCONF = 'server/tsconfig.json',
+    SERVER_SRC_TS = 'server/**/*.ts',
+    SERVER_TGT_JSCAT = 'server.js',
+    CLIENT_SRC_ASSETS = 'client/**/*.{html,css}', 
+    CLIENT_TSCONFIG = 'client/tsconfig.json',
+    CLIENT_SRC_TS = 'client/**/*.ts';    
 
 // CLIENT
-
-/*
-  jsNPMDependencies, sometimes order matters here! so becareful!
-*/
-var jsNPMDependencies = [
-    'angular2/bundles/angular2-polyfills.js',
-    'systemjs/dist/system.src.js',
-    'rxjs/bundles/Rx.js',
-    'angular2/bundles/angular2.dev.js',
-    'angular2/bundles/router.dev.js'
-] 
-
-gulp.task('build:assets', function(){
-    var mappedPaths = jsNPMDependencies.map(file => {return path.resolve('node_modules', file)}) 
+gulp.task('client:assets', function(){
+    var mappedPaths = CLIENT_JSNPM_DEPS.map(function (file) {return path.resolve('node_modules', file);}),
     
-    //Let's copy our head dependencies into a dist/libs
-    var copyJsNPMDependencies = gulp.src(mappedPaths, {base:'node_modules'})
-        .pipe(gulp.dest('dist/libs'))
+        //Let's copy our head dependencies into a dist/libs
+        copyCLIENT_JSNPM_DEPS = gulp.src(mappedPaths, {base:'node_modules'})
+        .pipe(gulp.dest(TGT_DIR_LIBS)),
      
-    //Let's copy our index into dist   
-    var copyIndex = gulp.src('client/**/*.{html,css}')
-        .pipe(gulp.dest('dist'))
-    return [copyJsNPMDependencies, copyIndex];
+        //Let's copy our assets into dist   
+        copyIndex = gulp.src(CLIENT_SRC_ASSETS)
+        .pipe(gulp.dest(TGT_DIR));
+        
+    return [copyCLIENT_JSNPM_DEPS, copyIndex];
 });
 
-gulp.task('build:app', function(){
-    var tsProject = ts.createProject('client/tsconfig.json');
-    var tsResult = gulp.src('client/**/*.ts')
+gulp.task('client:app', function(){
+    var tsProject = ts.createProject(CLIENT_TSCONFIG),
+        tsResult = gulp.src(CLIENT_SRC_TS)
 		.pipe(sourcemaps.init())
-        .pipe(ts(tsProject))
+        .pipe(ts(tsProject));
+        
 	return tsResult.js
         .pipe(sourcemaps.write()) 
-		.pipe(gulp.dest('dist'))
+		.pipe(gulp.dest(TGT_DIR));
 });
 
+gulp.task('client', ['client:app', 'client:assets']);
 
-gulp.task('build', function(callback){
-    runSequence('clean', 'build:server', 'build:assets', 'build:app', callback);
+
+// SERVER
+gulp.task('server', function () {
+	var tsProject = ts.createProject(SERVER_TSCONF),
+        tsResult = gulp.src(SERVER_SRC_TS)
+		.pipe(sourcemaps.init())
+        .pipe(ts(tsProject));
+	return tsResult.js
+        //.pipe(concat(SERVER_TGT_JSCAT))
+        .pipe(sourcemaps.write()) 
+		.pipe(gulp.dest(TGT_DIR));
+});
+
+gulp.task('all', ['client', 'server']);
+
+
+// GENERAL
+gulp.task('clean', function(){
+    return del(TGT_DIR);
+});
+
+gulp.task('build', ['clean'], function(){
+    return gulp.start('all');
 });
 
 gulp.task('default', ['build']);
+
+
+// RUN and WATCH
+gulp.task('demon', function () {
+    return nodemon({
+        script: path.join(TGT_DIR, SERVER_TGT_JSCAT),
+        watch: 'dist',
+        delay: 250, // 200 millis to avoid to much restarts while rebuilding is going on
+        ext: 'js',
+        env: {
+            'NODE_ENV': 'development'
+        }
+    })
+    //.watch('dist/**/*.*')
+    .on('start', function() {
+        gutil.log(gutil.colors.green('[gulp-nodemon] started'));
+    })
+    .on('change', function() {
+        gutil.log(gutil.colors.green('[gulp-nodemon] change event'));
+    })
+    .on('restart', function () {
+        gutil.log(gutil.colors.green('[gulp-nodemon] restarted!'));
+    })
+    .on('crash', function () {
+        gutil.log(gutil.colors.red('[gulp-nodemon] has crashed!'));
+    })
+    .on('exit', function () {
+        gutil.log(gutil.colors.green('[gulp-nodemon] is done!'));
+    });
+});
+
+gulp.task('watch:client-app', function () {
+    // watch app    --> build app    + restart
+    gulp.watch(CLIENT_SRC_TS, ['client:app']);
+});
+gulp.task('watch:client-assets', function () {
+    // watch assets --> build assets + restart
+    gulp.watch(CLIENT_SRC_ASSETS, ['client:assets']);
+});
+gulp.task('watch:server', function () {
+    // watch server --> build server + restart
+    gulp.watch(SERVER_SRC_TS, ['server']);
+});
+gulp.task('watch', ['watch:server', 'watch:client-assets', 'watch:client-app']);
+
+gulp.task('serv', function (callback) {
+    runSequence(['all', 'watch', 'demon'], callback);
+});
+
+
+// EXIT ON CTRL-C WHEN watch or serve
+process.once('SIGINT', function(){
+    process.exit(0);
+});

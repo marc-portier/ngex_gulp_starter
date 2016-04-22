@@ -6,8 +6,12 @@
 01-3. only work on changed files?
 
 02. split off static stuff to dist/public
-02-1. introduce sass and use bootstrap
+02-1. introduce sass and use bootstrap --> to /public 
+      gulp-ruby-sass --> .pipe(sass(style :'extend'})
+      gulp-autoprefixer --> .pipe(autoprefixer('last 2 versions'))
 02-2. introduce uglify/minify and rename
+      gulp-rename --> .pipe(gulp.dest(..)).pipe(rename({suffix: 'min'}).pipe(minify()).pipe(gulp.dest(..))
+02-3. concatenate all public/js/**/*.js into public/js/all.js
 
 **express**
 03. introduce views and routes --> api

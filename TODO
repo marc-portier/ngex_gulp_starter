@@ -1,8 +1,8 @@
 **gulp**
 01. ---- make a dev env combining watch and nodemon --> solve double ctrl-c // check manual restart
 01-1. -- introduce src folder
-01-1. make a deploy-mode script for nodemon bin/www style
-01-2. check out browser reload trigger? --> livereload.com? check angular-quickstart? --> https://www.npmjs.com/package/reload
+01-1. -- make a deploy-mode script for nodemon bin/www style
+01-2. check out browser reload trigger? --> livereload.com? check angular-quickstart (lite-server)? --> alternative https://www.npmjs.com/package/reload
 01-3. only work on changed files? --> cache() ?
 
 02. split off static stuff to dist/public
@@ -11,17 +11,35 @@
       gulp-autoprefixer --> .pipe(autoprefixer('last 2 versions'))
 02-2. introduce uglify/minify and rename
       gulp-rename --> .pipe(gulp.dest(..)).pipe(rename({suffix: 'min'}).pipe(minify()).pipe(gulp.dest(..))
-02-3. concatenate all public/{js,css}/**/*.* into public/js/all.js and css/style.css
+02-3. concatenate all non-ng js and css from public/{js,css}/**/*.* into public/js/all.js and css/style.css  + use browserify
+02-4. introduce jade also for /public html pages src/server/public/**/*.jade --> dist/public/**/*.html
+
+
+// see https://www.youtube.com/playlist?list=PLRk95HPmOM6PN-G1xyKj9q6ap_dc9Yckm
+// see https://www.browsersync.io/docs/gulp/
+
 
 **express**
 03. introduce views and routes --> api
 03-1. using jade
+
 
 **angular**
 04. map actual storage to service on server-side (angular http)
 05. allow more then one ng-app --> index.html --> /ng/app-toh.html
 06. variant combine list and detail in one component (no routing)
 07. relations to 2nd model?
+
+
+**STORAGE**
+? what to use for actual storage?
+      - json files + indexer (elastic)
+      - mysql
+      - mongo
+      - other?
+? optimistic lock support!
+? pessimistic lock support? --> intermediate saved version
+
 
 **wrap up**
 08. strip from model --> create template env -- make a branch with one sample

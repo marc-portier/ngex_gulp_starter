@@ -11,11 +11,12 @@ var gulp = require('gulp'),
 // const    
     TGT_DIR = 'dist',
     TGT_DIR_LIBS = path.join(TGT_DIR,'libs'),
-    SERVER_TGT_JS = 'server.js',
+    TGT_BIN = path.join(TGT_DIR, 'bin/www'),
     
     SRC_DIR = 'src',
     SERVER_TSCONF = path.join(SRC_DIR, 'server', 'tsconfig.json'),
     SERVER_SRC_TS = path.join(SRC_DIR, 'server', '**', '*.ts'),
+    SERVER_SRC_BIN = path.join(SRC_DIR, 'server', 'bin', '**', '*'), 
     CLIENT_SRC_ASSETS = path.join(SRC_DIR, 'client', '**', '*.{html,css}'), 
     CLIENT_TSCONFIG = path.join(SRC_DIR, 'client', 'tsconfig.json'),
     CLIENT_SRC_TS = path.join(SRC_DIR, 'client', '**', '*.ts'),
@@ -57,17 +58,24 @@ gulp.task('client', ['client:app', 'client:assets']);
 
 
 // SERVER
-gulp.task('server', function () {
+gulp.task('server:app', function () {
 	var tsProject = ts.createProject(SERVER_TSCONF),
         tsResult = gulp.src(SERVER_SRC_TS)
 		.pipe(sourcemaps.init())
         .pipe(ts(tsProject));
 	return tsResult.js
-        //.pipe(concat(SERVER_TGT_JS))
         .pipe(sourcemaps.write()) 
 		.pipe(gulp.dest(TGT_DIR));
 });
 
+gulp.task('server:bin', function () {
+    return gulp.src(SERVER_SRC_BIN)
+        .pipe(gulp.dest(path.join(TGT_DIR,'bin')));
+});
+
+gulp.task('server', ['server:app', 'server:bin']);
+
+// ALL
 gulp.task('all', ['client', 'server']);
 
 
@@ -86,8 +94,8 @@ gulp.task('default', ['build']);
 // RUN and WATCH
 gulp.task('demon', function () {
     return nodemon({
-        script: path.join(TGT_DIR, SERVER_TGT_JS),
-        watch: 'dist',
+        script: TGT_BIN,
+        watch: TGT_DIR,
         delay: 200, // 200 millis to avoid to much restarts while rebuilding is going on
         ext: 'js',
         env: {

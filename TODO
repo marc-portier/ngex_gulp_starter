@@ -13,7 +13,7 @@
       gulp-rename --> .pipe(gulp.dest(..)).pipe(rename({suffix: 'min'}).pipe(minify()).pipe(gulp.dest(..))
 02-3. concatenate all non-ng js and css from public/{js,css}/**/*.* into public/js/all.js and css/style.css  + use browserify
 02-4. introduce jade also for /public html pages src/server/public/**/*.jade --> dist/public/**/*.html
-
+02-5. add a gulp deploy task that builds & moves to env-var DEPLOY_TGT
 
 // see https://www.youtube.com/playlist?list=PLRk95HPmOM6PN-G1xyKj9q6ap_dc9Yckm
 // see https://www.browsersync.io/docs/gulp/

@@ -7,11 +7,18 @@ var app = express();
 app.use('/app', express.static(path.resolve(__dirname, 'app')));
 app.use('/libs', express.static(path.resolve(__dirname, 'libs')));
 
-var renderIndex = (req: express.Request, res: express.Response) => {
+var renderIndex = (req: express.Request, res: express.Response, next: any) => {
+    //passthrough the reload requests... --> see [HACK]
+    if (req.url.indexOf('/reload') === 0) { return next();}
+    //else
     console.log("-> request to %s", req.url);
     res.sendFile(path.resolve(__dirname, 'index.html'));
 }
 
+// [HACK]
+// we need this /* trick only for ng single page apps that do their own routing
+// as a consequence the renderIndex now needs to bypass /reload stuff
+// we will fix this when introducing views
 app.get('/*', renderIndex);
 
 export { app }

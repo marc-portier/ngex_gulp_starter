@@ -2,7 +2,7 @@
 01. ---- make a dev env combining watch and nodemon --> solve double ctrl-c // check manual restart
 01-1. -- introduce src folder
 01-1. -- make a deploy-mode script for nodemon bin/www style
-01-2. check out browser reload trigger? --> livereload.com? check angular-quickstart (lite-server)? --> alternative https://www.npmjs.com/package/reload
+01-2. -- check out browser reload trigger? --> livereload.com? check angular-quickstart (lite-server)? --> alternative https://www.npmjs.com/package/reload
 01-3. only work on changed files? --> cache() ?
 
 02. split off static stuff to dist/public

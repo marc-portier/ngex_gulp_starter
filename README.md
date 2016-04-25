@@ -7,7 +7,7 @@ Started off from template described in
 
 # What
 
-First try-out of the system, merging in the angular-2 'tour-of-heroes' example to an express implementation
+First try-out of the system, merging in the angular-2 'tour-of-heroes' example into an express implementation
 
 
 # How

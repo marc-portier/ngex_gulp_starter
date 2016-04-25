@@ -28,6 +28,7 @@ var gulp = require('gulp'),
         'angular2/bundles/router.dev.js'
     ];
 
+
 // CLIENT
 gulp.task('client:assets', function(){
     var mappedPaths = CLIENT_JSNPM_DEPS.map(function (file) {return path.resolve('node_modules', file);}),
@@ -75,6 +76,7 @@ gulp.task('server:bin', function () {
 
 gulp.task('server', ['server:app', 'server:bin']);
 
+
 // ALL
 gulp.task('all', ['client', 'server']);
 
@@ -102,7 +104,6 @@ gulp.task('demon', function () {
             'NODE_ENV': 'development'
         }
     })
-    //.watch('dist/**/*.*')
     .on('start', function() {
         gutil.log(gutil.colors.green('[gulp-nodemon] started'));
     })

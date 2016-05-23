@@ -1,3 +1,9 @@
+# ngex_gulp_starter
+
+Seed project for angualr2 and express with gulp build
+
+
+
 # Ref & Credits
 
 Started off from template described in

@@ -5,6 +5,7 @@ import * as path from 'path';
 var app = express();
 
 app.use('/app', express.static(path.resolve(__dirname, 'app')));
+app.use('/public', express.static(path.resolve(__dirname, 'public')));
 app.use('/libs', express.static(path.resolve(__dirname, 'libs')));
 
 var renderIndex = (req: express.Request, res: express.Response, next: any) => {
